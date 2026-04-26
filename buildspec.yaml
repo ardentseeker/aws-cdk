@@ -5,11 +5,8 @@ phases:
     commands:
       - echo "Getting AWS Account ID..."
       - ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
-
       - echo "Logging in to Amazon ECR..."
-      - aws ecr get-login-password --region $DEFAULT_REGION \
-        | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$DEFAULT_REGION.amazonaws.com
-
+      - aws ecr get-login-password --region $DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$DEFAULT_REGION.amazonaws.com
       - echo "Constructing image URI..."
       - IMAGE_URI=$ACCOUNT_ID.dkr.ecr.$DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME:$TAG
 
@@ -17,7 +14,6 @@ phases:
     commands:
       - echo "Building Docker image..."
       - docker build -t $IMAGE_NAME:$TAG .
-
       - echo "Tagging Docker image..."
       - docker tag $IMAGE_NAME:$TAG $IMAGE_URI
 
@@ -25,5 +21,9 @@ phases:
     commands:
       - echo "Pushing Docker image to ECR..."
       - docker push $IMAGE_URI
-
       - echo "Build completed on $(date)"
+
+artifacts:
+  files:
+    - '**/*'
+  name: $IMAGE_NAME-$TAG
