@@ -58,11 +58,6 @@ export class InfraStack extends cdk.Stack {
       desiredCount: 2,
     });
 
-    // Output the service URL
-    new cdk.CfnOutput(scope, "ServiceURL", {
-      value: `http://${service.loadBalancer.loadBalancerDnsName}`,
-    });
-
     //Create an Application Load Balancer
     const loadBalancer = new elbv2.ApplicationLoadBalancer(scope, "ALB", {
       vpc,
@@ -79,5 +74,11 @@ export class InfraStack extends cdk.Stack {
       port: 80,
       targets: [service],
     });
+
+    // Output the load balancer URL
+    new cdk.CfnOutput(scope, "ServiceURL", {
+      value: `http://${loadBalancer.loadBalancerDnsName}`,
+    });
+
   }
 }
