@@ -14,7 +14,9 @@ export class InfraStack extends cdk.Stack {
   }
 
   createAssets(scope: Construct) {
-    const dockerImage = ecs.ContainerImage.fromAsset("../");
+    const dockerImage = ecs.ContainerImage.fromAsset("../", {
+      exclude: ["infra"],
+    });
     return dockerImage;
   }
 
