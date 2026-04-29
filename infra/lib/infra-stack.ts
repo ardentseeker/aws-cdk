@@ -9,13 +9,20 @@ export class InfraStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const vpc = this.createVPC(this);
-    const dockerImage = this.createAssets(this);
+    const skipAssetBuild = this.node.tryGetContext("skipAssetBuild") === "true";
+    const dockerImage = this.createAssets(this, skipAssetBuild);
     this.createEcsWebService(this, vpc, dockerImage);
   }
 
-  createAssets(scope: Construct) {
+  createAssets(scope: Construct, skipBuild: boolean) {
+    if (skipBuild) {
+      // Placeholder for initial pipeline deployment - pipeline will build actual image
+      return ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample");
+    }
+    // Built in AWS CodeBuild when deployed via pipeline
     const dockerImage = ecs.ContainerImage.fromAsset("../", {
-      exclude: ["infra"],
+      exclude: ["infra", "node_modules", ".git"],
+      file: "Dockerfile",
     });
     return dockerImage;
   }
@@ -26,6 +33,7 @@ export class InfraStack extends cdk.Stack {
       vpcName: "MyVPC",
       maxAzs: 2,
       natGateways: 1,
+      restrictDefaultSecurityGroup: false, // Avoids Lambda custom resource
     });
     return vpc;
   }

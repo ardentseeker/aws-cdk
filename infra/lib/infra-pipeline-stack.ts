@@ -19,9 +19,14 @@ export class InfraPipelineStack extends cdk.Stack {
       selfMutation: true,
       synth: new pipelines.ShellStep("Synth", {
         input: source,
-        commands: ["cd infra", "npm ci", "cdk synth"],
+        commands: [
+          "cd infra",
+          "npm ci",
+          "npx cdk synth --context skipAssetBuild=true"
+        ],
       }),
     });
+
     pipeline.addStage(new DeployInfraStackStage(this, "DeployInfraStack"));
   }
 }
@@ -29,6 +34,7 @@ export class InfraPipelineStack extends cdk.Stack {
 export class DeployInfraStackStage extends cdk.Stage {
   constructor(scope: Construct, id: string, props?: cdk.StageProps) {
     super(scope, id, props);
+    // Pipeline builds the actual Docker image - no skip flag here
     new InfraStack(this, "InfraStack");
   }
 }
