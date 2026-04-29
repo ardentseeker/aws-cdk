@@ -10,15 +10,11 @@ export class InfraStack extends cdk.Stack {
     super(scope, id, props);
     const vpc = this.createVPC(this);
     const skipAssetBuild = this.node.tryGetContext("skipAssetBuild") === "true";
-    const dockerImage = this.createAssets(this, skipAssetBuild);
+    const dockerImage = this.createAssets();
     this.createEcsWebService(this, vpc, dockerImage);
   }
 
-  createAssets(scope: Construct, skipBuild: boolean) {
-    if (skipBuild) {
-      // Placeholder for initial pipeline deployment - pipeline will build actual image
-      return ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample");
-    }
+  createAssets() {
     // Built in AWS CodeBuild when deployed via pipeline
     const dockerImage = ecs.ContainerImage.fromAsset("../", {
       exclude: ["infra", "node_modules", ".git"],
