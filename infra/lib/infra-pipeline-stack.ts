@@ -6,9 +6,14 @@ import { InfraStack } from "./infra-stack";
 export class InfraPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    const source = pipelines.CodePipelineSource.gitHub("roush/infra", "main", {
-      authentication: cdk.SecretValue.secretsManager("github-token"),
-    });
+    const source = pipelines.CodePipelineSource.connection(
+      "ardentseeker/aws-cdk",
+      "main",
+      {
+        connectionArn:
+          "arn:aws:codeconnections:us-east-1:639493421189:connection/8cc9db2e-8d57-4dfb-b33d-32ec7137d645",
+      },
+    );
     const pipeline = new pipelines.CodePipeline(this, "Pipeline", {
       pipelineName: "InfraPipeline",
       synth: new pipelines.ShellStep("Synth", {
