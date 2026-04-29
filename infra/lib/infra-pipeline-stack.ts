@@ -16,6 +16,7 @@ export class InfraPipelineStack extends cdk.Stack {
     );
     const pipeline = new pipelines.CodePipeline(this, "Pipeline", {
       pipelineName: "InfraPipeline",
+      selfMutation: true,
       synth: new pipelines.ShellStep("Synth", {
         input: source,
         commands: ["cd infra", "npm ci", "cdk synth"],
