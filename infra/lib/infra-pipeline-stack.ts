@@ -22,7 +22,7 @@ export class InfraPipelineStack extends cdk.Stack {
         commands: [
           "cd infra",
           "npm ci",
-          "npx cdk synth --context skipAssetBuild=true"
+          "npx cdk synth"
         ],
         primaryOutputDirectory: "infra/cdk.out",
       }),
