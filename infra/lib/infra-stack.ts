@@ -51,6 +51,7 @@ export class InfraStack extends cdk.Stack {
     const container = taskDefinition.addContainer("WebContainer", {
       image: dockerImage,
       logging: ecs.LogDrivers.awsLogs({ streamPrefix: "WebContainer" }),
+      portMappings: [{ containerPort: 80 }],
     });
 
     // Create a Fargate service
