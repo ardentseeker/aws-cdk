@@ -18,7 +18,7 @@ export class InfraStack extends cdk.Stack {
     // Built in AWS CodeBuild when deployed via pipeline
     const dockerImage = ecs.ContainerImage.fromAsset("../", {
       exclude: ["infra", "node_modules", ".git"],
-      file: "Dockerfile",
+      file: "dockerfile",
     });
     return dockerImage;
   }
