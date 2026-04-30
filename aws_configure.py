@@ -102,6 +102,10 @@ def print_public_key(public_key: Path):
 def ensure_ssh_config(ssh_dir: Path, ssh_user: str):
     answer = input("Do you want to add a CodeCommit host entry to your SSH config? [Y/n]: ").strip().lower()
     if answer in ["", "y", "yes"]:
+        ssh_user = input("Enter the CodeCommit SSH user returned by AWS (for example APKAZJZGHHCCUMRO7KEJ): ").strip()
+        if not ssh_user:
+            print("SSH user is required. Exiting.")
+            sys.exit(1)
         print("Adding CodeCommit host entry to SSH config...")
         ssh_config = ssh_dir / "config"
         host_block = (
@@ -176,12 +180,8 @@ def main():
     print_public_key(public_key)
 
     print("\nPlease add this public key in the AWS CodeCommit IAM user SSH keys section.")
-    ssh_user = input("Enter the CodeCommit SSH user returned by AWS (for example APKAZJZGHHCCUMRO7KEJ): ").strip()
-    if not ssh_user:
-        print("SSH user is required. Exiting.")
-        sys.exit(1)
 
-    ensure_ssh_config(ssh_dir, ssh_user)
+    ensure_ssh_config(ssh_dir)
 
     repo_name = input("Enter the CodeCommit repository name to create: ").strip()
     if not repo_name:
