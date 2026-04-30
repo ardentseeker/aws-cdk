@@ -9,3 +9,6 @@ eg: synth -> cfn template -> deploy
 
 ##Flow of the project
 Application stack -> pipeline stack -> bin/app.ts(entrypoint)
+
+##Git commands for work
+git remote set-url origin <value>
