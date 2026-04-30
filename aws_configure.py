@@ -142,7 +142,7 @@ def get_aws_region():
 
 
 def create_codecommit_repo(region: str):
-    answer = input(f"Do you want to create CodeCommit repository '{repo_name}' in region {region}? [Y/n]: ").strip().lower()
+    answer = input(f"Do you want to create CodeCommit repository in region {region}? [Y/n]: ").strip().lower()
     if answer not in ["", "y", "yes"]:
         repo_name = input("Enter the CodeCommit repository name to create: ").strip()
         if not repo_name:
