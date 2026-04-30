@@ -141,21 +141,26 @@ def get_aws_region():
         return None
 
 
-def create_codecommit_repo(repo_name: str, region: str):
+def create_codecommit_repo(region: str):
     answer = input(f"Do you want to create CodeCommit repository '{repo_name}' in region {region}? [Y/n]: ").strip().lower()
     if answer not in ["", "y", "yes"]:
-        print("Skipping repository creation. Exiting.")
-        return
-    print(f"Creating CodeCommit repository '{repo_name}' in region {region}...")
-    try:
-        run(f"aws codecommit create-repository --repository-name {repo_name} --region {region}")
-    except subprocess.CalledProcessError:
-        print("Repository may already exist or creation failed. Checking existing repository...")
-        run(f"aws codecommit get-repository --repository-name {repo_name} --region {region}")
+        repo_name = input("Enter the CodeCommit repository name to create: ").strip()
+        if not repo_name:
+            print("Repository name is required. Exiting.")
+            sys.exit(1)
+        print(f"Creating CodeCommit repository '{repo_name}' in region {region}...")
+        try:
+            run(f"aws codecommit create-repository --repository-name {repo_name} --region {region}")
+        except subprocess.CalledProcessError:
+            print("Repository may already exist or creation failed. Checking existing repository...")
+            run(f"aws codecommit get-repository --repository-name {repo_name} --region {region}")
 
-    ssh_url = f"ssh://git-codecommit.{region}.amazonaws.com/v1/repos/{repo_name}"
-    print(f"Repository SSH URL: {ssh_url}")
-    return ssh_url
+        ssh_url = f"ssh://git-codecommit.{region}.amazonaws.com/v1/repos/{repo_name}"
+        print(f"Repository SSH URL: {ssh_url}")
+        return ssh_url
+    else:
+        print("Skipping CodeCommit repository creation. You will need to create a repository and provide the SSH URL.")
+        return None
 
 
 def ensure_git_remote(ssh_url: str):
@@ -183,11 +188,6 @@ def main():
 
     ensure_ssh_config(ssh_dir)
 
-    repo_name = input("Enter the CodeCommit repository name to create: ").strip()
-    if not repo_name:
-        print("Repository name is required. Exiting.")
-        sys.exit(1)
-
     region = get_aws_region()
     if not region:
         region = input("AWS region not found. Enter region (for example us-east-1): ").strip()
@@ -195,7 +195,7 @@ def main():
             print("AWS region is required. Exiting.")
             sys.exit(1)
 
-    ssh_url = create_codecommit_repo(repo_name, region)
+    ssh_url = create_codecommit_repo(region)
     if ssh_url:
         ensure_git_remote(ssh_url)
         print("\nConfiguration complete. You can now push your repo to CodeCommit:")
