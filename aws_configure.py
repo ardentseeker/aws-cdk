@@ -100,23 +100,29 @@ def print_public_key(public_key: Path):
 
 
 def ensure_ssh_config(ssh_dir: Path, ssh_user: str):
-    ssh_config = ssh_dir / "config"
-    host_block = (
-        "Host git-codecommit.*.amazonaws.com\n"
-        f"  User {ssh_user}\n"
-        "  IdentityFile ~/.ssh/id_rsa\n"
-    )
+    answer = input("Do you want to add a CodeCommit host entry to your SSH config? [Y/n]: ").strip().lower()
+    if answer in ["", "y", "yes"]:
+        print("Adding CodeCommit host entry to SSH config...")
+        ssh_config = ssh_dir / "config"
+        host_block = (
+            "Host git-codecommit.*.amazonaws.com\n"
+            f"  User {ssh_user}\n"
+            "  IdentityFile ~/.ssh/id_rsa\n"
+        )
 
-    if ssh_config.exists():
-        text = ssh_config.read_text()
-        if f"User {ssh_user}" in text:
-            print("SSH config already contains a CodeCommit host entry.\n")
-            return ssh_config
+        if ssh_config.exists():
+            text = ssh_config.read_text()
+            if f"User {ssh_user}" in text:
+                print("SSH config already contains a CodeCommit host entry.\n")
+                return ssh_config
 
-    print(f"Writing CodeCommit ssh config to: {ssh_config}")
-    ssh_config.write_text(host_block)
-    ssh_config.chmod(0o600)
-    return ssh_config
+        print(f"Writing CodeCommit ssh config to: {ssh_config}")
+        ssh_config.write_text(host_block)
+        ssh_config.chmod(0o600)
+        return ssh_config
+    else:
+        print("Skipping SSH config update. You will need to manually configure SSH to use the key for CodeCommit.")
+        return
 
 
 def get_aws_region():
