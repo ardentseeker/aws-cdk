@@ -198,8 +198,8 @@ def main():
     ssh_url = create_codecommit_repo(repo_name, region)
     if ssh_url:
         ensure_git_remote(ssh_url)
-    print("\nConfiguration complete. You can now push your repo to CodeCommit:")
-    print("  git push -u origin main")
+        print("\nConfiguration complete. You can now push your repo to CodeCommit:")
+        print("  git push -u origin main")
 
 
 if __name__ == "__main__":
