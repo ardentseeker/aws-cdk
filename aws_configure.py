@@ -99,7 +99,7 @@ def print_public_key(public_key: Path):
     )
 
 
-def ensure_ssh_config(ssh_dir: Path, ssh_user: str):
+def ensure_ssh_config(ssh_dir: Path):
     answer = input("Do you want to add a CodeCommit host entry to your SSH config? [Y/n]: ").strip().lower()
     if answer in ["", "y", "yes"]:
         ssh_user = input("Enter the CodeCommit SSH user returned by AWS (for example APKAZJZGHHCCUMRO7KEJ): ").strip()
